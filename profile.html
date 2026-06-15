@@ -197,3 +197,103 @@
             <div class="form-row ">
                 <label for="location">Preferred District</label>
                 <select id="location">
+                    
+                    <option value="" disabled selected>-- Select District --</option>
+                    <option value="Alappuzha">Alappuzha</option>
+                    <option value="Ernakulam">Ernakulam</option>
+                    <option value="Idukki">Idukki</option>
+                    <option value="Kannur">Kannur</option>
+                    <option value="Kasaragod">Kasaragod</option>
+                    <option value="Kollam">Kollam</option>
+                    <option value="Kottayam">Kottayam</option>
+                    <option value="Kozhikode">Kozhikode</option>
+                    <option value="Malappuram">Malappuram</option>
+                    <option value="Palakkad">Palakkad</option>
+                    <option value="Pathanamthitta">Pathanamthitta</option>
+                    <option value="Thiruvananthapuram">Thiruvananthapuram</option>
+                    <option value="Thrissur">Thrissur</option>
+                    <option value="Wayanad">Wayanad</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="btn-container">
+            <button class="btn" type="submit" id="saveBtn">Update Profile</button>
+            <a href="index.html" style="color: #64748b; text-decoration: none;">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // --- Firebase Config ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyBt5DvViwm5ls_B4CWKYIYhMutJJ9opw_Y",
+      authDomain: "vidyaproject-c4a1d.firebaseapp.com",
+      projectId: "vidyaproject-c4a1d",
+      storageBucket: "vidyaproject-c4a1d.firebasestorage.app",
+      messagingSenderId: "637214484165",
+      appId: "1:637214484165:web:f23e84c08cd6069f6fb2ac",
+      measurementId: "G-647MPHBDGW"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    const msgBox = document.getElementById('msg');
+
+    // 1. Check Login & Load Data
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            currentUser = user;
+            loadData(user);
+        } else {
+            console.log("No user found yet...");
+        }
+    });
+
+    // 2. Load Function
+    async function loadData(user) {
+        try {
+            document.getElementById('email').value = user.email || '';
+
+            const docRef = doc(db, "users", user.uid);
+            const docSnap = await getDoc(docRef);
+            
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                const setVal = (id, val) => { if(val) document.getElementById(id).value = val; };
+                
+                setVal('firstName', data.firstName || (data.name ? data.name.split(' ')[0] : ''));
+                setVal('lastName', data.lastName || (data.name ? data.name.split(' ')[1] : ''));
+                setVal('University', data.university);
+                setVal('institutionType', data.institutionType); // NEW: Load Institution Type
+                setVal('stream', data.stream);
+                setVal('degree', data.degree);
+                setVal('location', data.location);
+            }
+        } catch (error) {
+            console.error("Error loading profile:", error);
+        }
+    }
+
+    // 3. Save Function
+    document.getElementById('profileForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const btn = document.getElementById('saveBtn');
+        btn.innerText = "Saving...";
+        btn.disabled = true;
+        
+        msgBox.style.display = 'none';
+        msgBox.className = '';
+
+        if (!currentUser) {
+            msgBox.innerText = "Error: You are not logged in.";
+            msgBox.className = 'error';
