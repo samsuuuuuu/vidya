@@ -297,3 +297,50 @@
         if (!currentUser) {
             msgBox.innerText = "Error: You are not logged in.";
             msgBox.className = 'error';
+
+            msgBox.style.display = 'block';
+            return;
+        }
+
+        const firstName = document.getElementById('firstName').value.trim();
+        const lastName = document.getElementById('lastName').value.trim();
+        const fullName = `${firstName} ${lastName}`.trim();
+
+        const userData = {
+            name: fullName,
+            firstName: firstName,
+            lastName: lastName,
+            email: currentUser.email, 
+            university: document.getElementById('University').value,
+            institutionType: document.getElementById('institutionType').value, // NEW: Save Institution Type
+            stream: document.getElementById('stream').value,
+            degree: document.getElementById('degree').value,
+            location: document.getElementById('location').value,
+            updatedAt: new Date()
+        };
+
+        try {
+            await setDoc(doc(db, "users", currentUser.uid), userData, { merge: true });
+
+            msgBox.innerText = "Profile Updated Successfully! Redirecting...";
+            msgBox.className = 'success';
+            msgBox.style.display = 'block';
+            
+            setTimeout(() => {
+                window.location.href = "index.html";
+            }, 1500);
+
+        } catch (error) {
+            console.error("Update Error:", error);
+            msgBox.innerText = "Error: " + error.message;
+            msgBox.className = 'error';
+            msgBox.style.display = 'block';
+            
+            btn.innerText = "Update Profile";
+            btn.disabled = false;
+        }
+    });
+</script>
+
+</body>
+</html>
