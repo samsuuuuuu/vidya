@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - VIDYA</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+  <style>
+    body, html { height: 100%; margin: 0; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+    .login-wrapper { display: flex; height: 100vh; width: 100%; }
+
+    /* --- LEFT PANEL --- */
+    .left-panel {
+      width: 50%;
+      background: linear-gradient(135deg, rgba(76, 29, 149, 0.8), rgba(110, 27, 214, 0.7)),
+                  url('assets/bg.jpg');
+      background-size: cover;
+      background-position: center;
+      color: white; display: flex; flex-direction: column;
+      justify-content: center; padding: 3rem;
+      position: relative;
+    }
+    .left-panel h1 { font-weight: 900; font-size: 3.5rem; margin-bottom: 10px; letter-spacing: 1px; }
+    .left-panel p { font-size: 1.2rem; opacity: 0.95; font-weight: 400; line-height: 1.4; }
+
+    /* --- RIGHT PANEL --- */
+    .right-panel {
+      width: 60%;
+      background-color: white;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+
+    .form-container { width: 100%; max-width: 400px; }
+    .form-title { color: #2e1065; font-weight: 800; margin-bottom: 25px; font-size: 2.2rem; text-align: center; }
+
+    .form-label { font-weight: 600; color: #444; font-size: 0.9rem; margin-bottom: 4px; }
+    .form-control { padding: 10px 12px; border-radius: 8px; border: 1px solid #ddd; background: #f8f9fa; font-size: 0.95rem; }
+    .form-control:focus { border-color: #6e1bd6; box-shadow: 0 0 0 0.2rem rgba(110, 27, 214, 0.1); background: white; }
+
+    .btn-purple {
+      background: #6e1bd6;
+      color: white; width: 100%; padding: 12px; border: none;
+      font-weight: bold; border-radius: 8px; font-size: 1rem;
+      margin-top: 15px; transition: 0.3s;
+    }
+    .btn-purple:hover { background: #4c1d95; transform: translateY(-1px); }
