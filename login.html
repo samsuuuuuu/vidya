@@ -145,5 +145,6 @@
       appId: "1:637214484165:web:f23e84c08cd6069f6fb2ac",
       measurementId: "G-647MPHBDGW"
     };
-
-    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
