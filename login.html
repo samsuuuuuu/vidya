@@ -205,3 +205,40 @@
            return;
         }
         
+
+        await redirectStudent(cred.user);
+      } catch (error) {
+        console.error("Login Error:", error.code);
+        btn.disabled = false;
+        btn.innerText = "Login";
+
+        if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+            showErr("Invalid Email or Password.");
+        } else if (error.code === 'auth/too-many-requests') {
+            showErr("Too many failed attempts. Try again later.");
+        } else {
+            showErr("Login Failed: " + error.message);
+        }
+      }
+    });
+
+    // --- FORGOT PASSWORD ---
+    $("sendResetBtn").addEventListener("click", async () => {
+        const email = $("resetEmail").value.trim();
+        const msg = $("resetMsg");
+        
+        if (!email) {
+            msg.innerText = "Please enter your email."; msg.style.color = "red"; msg.style.display = "block"; return;
+        }
+
+        try {
+            await sendPasswordResetEmail(auth, email);
+            msg.innerText = "Reset link sent! Check your inbox."; msg.style.color = "green"; msg.style.display = "block";
+        } catch (error) {
+            msg.innerText = "Error: " + error.message; msg.style.color = "red"; msg.style.display = "block";
+        }
+    });
+  </script>
+  <footer style="padding:28px;text-align:center;color:#666">2026 VIDYA Project | Developed by Samson Varghese, Ewin Job, Jeremiah AR</footer>
+</body>
+</html>
