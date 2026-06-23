@@ -94,3 +94,51 @@
             position: relative; height: 100%; display: flex; flex-direction: column;
         }
         .college-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
+
+        .card-cover { height: 80px; background: var(--gradient); position: relative; }
+        .card-logo-wrapper {
+            width: 70px; height: 70px; background: white; border-radius: 12px;
+            padding: 5px; position: absolute; top: 45px; left: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex;
+            align-items: center; justify-content: center;
+        }
+        .card-logo { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        .card-body { padding: 20px; padding-top: 45px; flex: 1; display: flex; flex-direction: column; }
+        .card-badges { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; }
+        .badge-item { font-size: 0.7rem; font-weight: 600; padding: 4px 8px; border-radius: 6px; background: #f3f4f6; color: var(--text-muted); }
+        .badge-highlight { background: #fdf2f8; color: var(--accent); }
+
+        .college-name {
+            font-size: 1.1rem; font-weight: 700; line-height: 1.4; color: var(--text-dark);
+            margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .college-meta { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px; display: flex; align-items: center; gap: 5px; }
+
+        .card-footer-custom {
+            margin-top: auto; border-top: 1px solid #f3f4f6; padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center; background: #fafafa;
+        }
+        .rating-badge { display: flex; align-items: center; gap: 4px; font-weight: 700; font-size: 0.9rem; color: var(--text-dark); }
+        .star-icon { color: #fbbf24; }
+        .btn-view { color: var(--primary); font-weight: 600; font-size: 0.9rem; text-decoration: none; transition: 0.2s; }
+        .btn-view:hover { color: var(--primary-dark); transform: translateX(3px); }
+
+        /* Compare Button */
+        .btn-compare-card {
+            position: absolute; top: 10px; right: 10px; z-index: 10;
+            background: rgba(255, 255, 255, 0.95); 
+            border: 1px solid #e2e8f0; color: #64748b; 
+            padding: 6px 14px; border-radius: 20px;
+            font-size: 0.8rem; font-weight: 700; cursor: pointer;
+            transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .btn-compare-card:hover { background: white; color: var(--primary); border-color: var(--primary); transform: translateY(-2px); }
+        .btn-compare-card.active { background: #dcfce7; color: #166534; border-color: #86efac; }
+        .best-value { background-color: #dcfce7 !important; color: #14532d; font-weight: 700; }
+
+        /* Mobile Filter Styles */
+        .mobile-filter-btn { display: none; width: 100%; padding: 12px; background: white; border: 1px solid #eee; border-radius: 12px; font-weight: 600; color: var(--primary); margin-bottom: 20px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .filter-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1999; backdrop-filter: blur(3px); }
+        .btn-close-filter { display: none; background: none; border: none; color: white; font-size: 1.2rem; }
