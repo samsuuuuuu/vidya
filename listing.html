@@ -288,3 +288,43 @@
                     <span class="text-muted small" id="resultCount">Loading...</span>
                 </div>
             </div>
+
+            <div id="collegesListContainer">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2 text-muted">Finding colleges & courses...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="compareBar" class="compare-bar">
+        <div>
+            <i class="fas fa-check-circle me-2 text-success"></i>
+            <span class="fw-bold" id="compareCount">0</span> Colleges Selected
+            <button class="clear-btn ms-2" onclick="clearComparison()">Clear</button>
+        </div>
+        <button class="compare-btn" onclick="openCompareModal()">Compare Now</button>
+    </div>
+
+    <div class="modal fade" id="compareModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-balance-scale me-2 text-primary"></i>Compare Colleges</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pb-5"> 
+                    <div id="compareContextMsg" class="alert alert-soft-primary d-flex align-items-center small mb-4" style="background:#eff6ff; border:1px solid #dbeafe; color:#1e40af; border-radius:8px;"></div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-center align-middle">
+                            <thead class="table-light" style="border-bottom: 2px solid #e2e8f0;">
+                                <tr id="compHeaderRow"><th>Feature</th></tr>
+                            </thead>
+                            <tbody id="compBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
