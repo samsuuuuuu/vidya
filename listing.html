@@ -142,3 +142,53 @@
         .mobile-filter-btn { display: none; width: 100%; padding: 12px; background: white; border: 1px solid #eee; border-radius: 12px; font-weight: 600; color: var(--primary); margin-bottom: 20px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
         .filter-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1999; backdrop-filter: blur(3px); }
         .btn-close-filter { display: none; background: none; border: none; color: white; font-size: 1.2rem; }
+        
+        @media (max-width: 991px) {
+            .listing-container { flex-direction: column; padding: 20px; }
+            .filter-sidebar {
+                position: fixed; top: 0; left: -100%; width: 85%; max-width: 320px;
+                height: 100vh; border-radius: 0; z-index: 2000;
+                transition: left 0.3s ease;
+            }
+            .filter-sidebar.active { left: 0; }
+            .filter-overlay.active { display: block; }
+            .filter-header { border-radius: 0; }
+            .btn-close-filter { display: block; }
+            .mobile-filter-btn { display: block; }
+        }
+
+        /* Floating Compare Bar */
+        .compare-bar {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: #1e293b; color: white; padding: 12px 30px;
+            border-radius: 50px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            display: none; align-items: center; gap: 20px; z-index: 2000;
+            width: 90%; max-width: 500px; justify-content: space-between;
+        }
+        .compare-bar.active { display: flex; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { bottom: -100px; } to { bottom: 20px; } }
+        
+        .compare-btn { background: var(--accent); border: none; padding: 8px 20px; border-radius: 30px; color: white; font-weight: bold; font-size: 0.9rem; transition: 0.2s; }
+        .compare-btn:hover { background: #db2777; transform: scale(1.05); }
+        .clear-btn { color: #cbd5e1; background: none; border: none; font-size: 0.9rem; cursor: pointer; text-decoration: underline; }
+        .clear-btn:hover { color: white; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">VIDYA</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon" style="filter: invert(1);"></span> 
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html"><i class="fas fa-home me-1"></i> Home</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="filter-overlay" id="filterOverlay" onclick="toggleFilter()"></div>
+
