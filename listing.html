@@ -192,3 +192,51 @@
 
     <div class="filter-overlay" id="filterOverlay" onclick="toggleFilter()"></div>
 
+    <div class="listing-container">
+        
+        <aside class="filter-sidebar" id="filterSidebar">
+            <div class="filter-header">
+                <h5 class="m-0 fw-bold"><i class="fas fa-filter me-2"></i>Filters</h5>
+                <div class="d-flex align-items-center gap-3">
+                    <a href="#" onclick="resetFilters()" class="text-white text-decoration-none small fw-bold" style="opacity:0.9;">Reset</a>
+                    <button class="btn-close-filter" onclick="toggleFilter()"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+
+            <div class="filter-body">
+                <div class="filter-label">Location</div>
+                <select class="form-select" id="filterLocation" onchange="applyFilters()">
+                    <option value="">All Locations</option>
+                    <option value="Alappuzha">Alappuzha</option>
+                    <option value="Ernakulam">Ernakulam</option>
+                    <option value="Idukki">Idukki</option>
+                    <option value="Kannur">Kannur</option>
+                    <option value="Kasaragod">Kasaragod</option>
+                    <option value="Kollam">Kollam</option>
+                    <option value="Kottayam">Kottayam</option>
+                    <option value="Kozhikode">Kozhikode</option>
+                    <option value="Malappuram">Malappuram</option>
+                    <option value="Palakkad">Palakkad</option>
+                    <option value="Pathanamthitta">Pathanamthitta</option>
+                    <option value="Thiruvananthapuram">Thiruvananthapuram</option>
+                    <option value="Thrissur">Thrissur</option>
+                    <option value="Wayanad">Wayanad</option>
+                </select>
+
+                <div class="filter-label">University</div>
+                <select class="form-select" id="filterUniv" onchange="applyFilters()">
+                    <option value="">All Universities</option>
+                </select>
+
+                <div class="filter-label">Institution Type</div>
+                <select class="form-select" id="filterType" onchange="applyFilters()">
+                    <option value="">All Types</option>
+                    <option value="Government">Government</option>
+                    <option value="Private">Private</option>
+                    <option value="Aided">Aided</option>
+                    <option value="Autonomous">Autonomous</option>
+                </select>
+
+                <div class="filter-label">Stream</div>
+                <select class="form-select" id="filterStream" onchange="applyFilters()">
+                    <option value="">All Streams</option>
