@@ -369,3 +369,20 @@
                 setSmart('filterStream', q);
             }
         }
+
+        async function fetchAllData() {
+            try {
+                const colSnap = await getDocs(collection(db, "colleges"));
+                allColleges = [];
+                colSnap.forEach(doc => allColleges.push({ id: doc.id, ...doc.data() }));
+
+                const courseSnap = await getDocs(collection(db, "courses"));
+                allCourses = [];
+                courseSnap.forEach(doc => allCourses.push({ id: doc.id, ...doc.data() }));
+
+                allColleges.forEach(college => {
+                    college.courseList = allCourses.filter(c => c.college_id === college.id);
+                });
+                populateUniversities();
+            } catch (e) { console.error("Fetch error:", e); }
+        }
