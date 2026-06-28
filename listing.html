@@ -411,4 +411,31 @@
             const filtered = allColleges.filter(col => {
                 if (loc && !flexibleMatch(col.district, loc) && !flexibleMatch(col.location, loc)) return false;
                 if (univ && !flexibleMatch(col.university, univ)) return false;
-    
+                
+                let streamPass = false;
+                if (!stream) streamPass = true;
+                else {
+                    if (flexibleMatch(col.stream, stream)) streamPass = true;
+                    else if (stream === "Computer Science" && flexibleMatch(col.stream, "Engineering")) streamPass = true;
+                }
+                if (!streamPass) return false;
+
+                if (type && !flexibleMatch(col.institution_type, type) && !flexibleMatch(col.institutionType, type)) return false;
+
+                if (courseName || maxFee) {
+                    const validCourses = col.courseList.filter(c => {
+                        let nameMatch = true;
+                        let feeMatch = true;
+                        if (courseName && !c.name.toLowerCase().includes(courseName.toLowerCase())) nameMatch = false;
+                        if (maxFee) {
+                            const fees = parseInt(c.fees || 0);
+                            if (fees === 0 || fees > parseInt(maxFee)) feeMatch = false;
+                        }
+                        return nameMatch && feeMatch;
+                    });
+                    if (validCourses.length === 0) return false;
+                }
+                return true;
+            });
+            renderGroupedColleges(filtered);
+        };
