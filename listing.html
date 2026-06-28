@@ -386,3 +386,29 @@
                 populateUniversities();
             } catch (e) { console.error("Fetch error:", e); }
         }
+
+        function populateUniversities() {
+            const univSelect = document.getElementById('filterUniv');
+            univSelect.innerHTML = '<option value="">All Universities</option>';
+            const profileUniversities = [
+                "University of Calicut", "APJ Abdul Kalam Technological University", "University of Kerala",
+                "Mahatma Gandhi University", "Cochin University of Science & Technology", "Kannur University"
+            ];
+            profileUniversities.forEach(univ => {
+                const opt = document.createElement('option');
+                opt.value = univ; opt.innerText = univ; univSelect.appendChild(opt);
+            });
+        }
+
+        window.applyFilters = function() {
+            const loc = getVal('filterLocation');
+            const univ = getVal('filterUniv');
+            const stream = getVal('filterStream');
+            const courseName = getVal('filterCourse');
+            const maxFee = getVal('filterFees');
+            const type = getVal('filterType');
+
+            const filtered = allColleges.filter(col => {
+                if (loc && !flexibleMatch(col.district, loc) && !flexibleMatch(col.location, loc)) return false;
+                if (univ && !flexibleMatch(col.university, univ)) return false;
+    
