@@ -467,3 +467,28 @@
                     container.appendChild(currentGrid);
                     lastDistrict = district;
                 }
+
+                const logo = col.logo_path || 'assets/default-college.png';
+                const typeBadge = col.institution_type ? `<span class="badge-item badge-highlight">${col.institution_type}</span>` : '';
+                const streamBadge = col.stream ? `<span class="badge-item">${col.stream}</span>` : '';
+                const courseCountBadge = `<span class="badge-item bg-light text-dark">${col.courseList.length} Courses</span>`;
+                
+                const isSelected = window.compareList.includes(col.id);
+                const btnClass = isSelected ? 'btn-compare-card active' : 'btn-compare-card';
+                const btnIcon = isSelected ? 'fa-check' : 'fa-plus';
+                const btnText = isSelected ? 'Added' : 'Compare';
+
+                const cardHTML = `
+                <div class="col-md-6 col-lg-4">
+                    <div class="college-card">
+                        <button class="${btnClass}" onclick="toggleCompare('${col.id}', this)">
+                            <i class="fas ${btnIcon}"></i> ${btnText}
+                        </button>
+                        <a href="college.html?id=${col.id}" class="text-decoration-none">
+                            <div class="card-cover"></div>
+                            <div class="card-logo-wrapper"><img src="${logo}" class="card-logo" alt="Logo"></div>
+                            <div class="card-body">
+                                <div class="card-badges">${streamBadge} ${typeBadge} ${courseCountBadge}</div>
+                                <h5 class="college-name">${col.name}</h5>
+                                <div class="college-meta"><i class="fas fa-university fa-sm"></i> ${col.university || 'Affiliated'}</div>
+                            </div>
