@@ -492,3 +492,29 @@
                                 <h5 class="college-name">${col.name}</h5>
                                 <div class="college-meta"><i class="fas fa-university fa-sm"></i> ${col.university || 'Affiliated'}</div>
                             </div>
+
+                            <div class="card-footer-custom">
+                                <div class="rating-badge"><i class="fas fa-star star-icon"></i> ${col.rating || '0.0'}</div>
+                                <span class="btn-view">View Details <i class="fas fa-arrow-right ms-1"></i></span>
+                            </div>
+                        </a>
+                    </div>
+                </div>`;
+                currentGrid.insertAdjacentHTML('beforeend', cardHTML);
+            });
+        }
+
+        window.toggleCompare = function(id, btn) {
+            const idx = window.compareList.indexOf(id);
+            if(idx > -1) {
+                window.compareList.splice(idx, 1);
+                btn.classList.remove('active');
+                btn.innerHTML = `<i class="fas fa-plus"></i> Compare`;
+            } else {
+                if(window.compareList.length >= 3) { alert("You can compare maximum 3 colleges."); return; }
+                window.compareList.push(id);
+                btn.classList.add('active');
+                btn.innerHTML = `<i class="fas fa-check"></i> Added`;
+            }
+            updateCompareBar();
+        }
