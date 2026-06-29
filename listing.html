@@ -439,3 +439,31 @@
             });
             renderGroupedColleges(filtered);
         };
+
+        function renderGroupedColleges(colleges) {
+            const container = document.getElementById('collegesListContainer');
+            const countLabel = document.getElementById('resultCount');
+            
+            container.innerHTML = "";
+            countLabel.innerText = `Showing ${colleges.length} results`;
+
+            if(colleges.length === 0) {
+                container.innerHTML = `<div class="text-center py-5"><h5>No colleges found</h5><button class="btn btn-outline-primary mt-2" onclick="resetFilters()">Reset All Filters</button></div>`;
+                return;
+            }
+
+            colleges.sort((a, b) => (a.district || "z").localeCompare(b.district || "z"));
+
+            let lastDistrict = null;
+            let currentGrid = null;
+
+            colleges.forEach(col => {
+                const district = col.district || "Other Locations";
+
+                if (district !== lastDistrict) {
+                    container.insertAdjacentHTML('beforeend', `<h4 class="location-heading">${district}</h4>`);
+                    currentGrid = document.createElement('div');
+                    currentGrid.className = "row g-4 mb-4";
+                    container.appendChild(currentGrid);
+                    lastDistrict = district;
+                }
