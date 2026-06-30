@@ -543,3 +543,22 @@
             // 2. Refresh all buttons to "Compare" state
             applyFilters(); 
         }
+
+        // --- HIDE BAR ON MODAL OPEN ---
+        const compareBarEl = document.getElementById('compareBar');
+        const compareModalEl = document.getElementById('compareModal');
+
+        compareModalEl.addEventListener('show.bs.modal', () => { compareBarEl.style.display = 'none'; });
+        compareModalEl.addEventListener('hidden.bs.modal', () => { 
+            if(window.compareList.length > 0) compareBarEl.style.display = 'flex'; 
+        });
+
+        window.openCompareModal = function() {
+            const modal = new bootstrap.Modal(compareModalEl);
+            const tbody = document.getElementById('compBody');
+            const headerRow = document.getElementById('compHeaderRow');
+            const ctxMsg = document.getElementById('compareContextMsg');
+            
+            const selectedCols = allColleges.filter(c => window.compareList.includes(c.id));
+            if(selectedCols.length < 2) { alert("Select at least 2 colleges."); return; }
+
