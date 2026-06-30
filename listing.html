@@ -518,3 +518,28 @@
             }
             updateCompareBar();
         }
+
+        function updateCompareBar() {
+            const bar = document.getElementById('compareBar');
+            const count = document.getElementById('compareCount');
+            if(window.compareList.length > 0) {
+                bar.style.display = 'flex'; // FORCE DISPLAY
+                bar.classList.add('active');
+                count.innerText = window.compareList.length;
+            } else {
+                bar.classList.remove('active');
+                bar.style.display = 'none'; // FORCE HIDE
+            }
+        }
+
+        window.clearComparison = function() {
+            window.compareList = [];
+            
+            // 1. Force hide the bar immediately
+            const bar = document.getElementById('compareBar');
+            bar.classList.remove('active');
+            bar.style.display = 'none';
+
+            // 2. Refresh all buttons to "Compare" state
+            applyFilters(); 
+        }
