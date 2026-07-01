@@ -628,3 +628,22 @@
                         const max = Math.max(...values);
                         if(max > 0) bestIdx = values.indexOf(max);
                     } else {
+
+                        const validValues = values.filter(v => v > 0 && v < 999999);
+                        const min = Math.min(...validValues);
+                        if(validValues.length > 0) bestIdx = values.indexOf(min);
+                    }
+                }
+
+                return `<tr>
+                    <td class="fw-bold bg-light">${r.label}</td>
+                    ${selectedCols.map((c, i) => `
+                        <td class="${i === bestIdx ? 'best-value' : ''}">
+                            ${r.val ? r.val(c) : (c[r.key] || '-')}
+                        </td>
+                    `).join('')}
+                </tr>`;
+            }).join('');
+
+            modal.show();
+        }
