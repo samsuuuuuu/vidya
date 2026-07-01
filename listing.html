@@ -581,3 +581,25 @@
                 { label: "Type", key: "institution_type" },
                 { label: "Location", key: "district" },
             ];
+
+            if(activeCourse) {
+                rows.push({ label: "Course", val: () => activeCourse });
+                rows.push({ 
+                    label: "Tuition Fee (Approx)", 
+                    highlightMin: true, 
+                    val: (c) => {
+                        const course = c.courseList.find(x => x.name.toLowerCase().includes(activeCourse.toLowerCase()));
+                        return course ? `₹${course.fees}` : 'N/A';
+                    },
+                    rawVal: (c) => { 
+                        const course = c.courseList.find(x => x.name.toLowerCase().includes(activeCourse.toLowerCase()));
+                        return course ? parseInt(course.fees) : 9999999;
+                    }
+                });
+                rows.push({ 
+                    label: "Seats",
+                    highlightMax: true,
+                    val: (c) => {
+                        const course = c.courseList.find(x => x.name.toLowerCase().includes(activeCourse.toLowerCase()));
+                        return course ? course.seats : '-';
+                    },
