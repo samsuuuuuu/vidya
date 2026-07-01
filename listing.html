@@ -603,3 +603,28 @@
                         const course = c.courseList.find(x => x.name.toLowerCase().includes(activeCourse.toLowerCase()));
                         return course ? course.seats : '-';
                     },
+
+                    rawVal: (c) => { 
+                        const course = c.courseList.find(x => x.name.toLowerCase().includes(activeCourse.toLowerCase()));
+                        return course ? parseInt(course.seats) : 0;
+                    }
+                });
+                rows.push({ 
+                    label: "Duration", 
+                    val: (c) => {
+                        const course = c.courseList.find(x => x.name.toLowerCase().includes(activeCourse.toLowerCase()));
+                        return course ? course.duration : '-';
+                    }
+                });
+            } else {
+                rows.push({ label: "Total Courses", val: (c) => c.courseList.length });
+            }
+
+            tbody.innerHTML = rows.map(r => {
+                let bestIdx = -1;
+                if(r.highlightMax || r.highlightMin) {
+                    const values = selectedCols.map(c => r.rawVal ? r.rawVal(c) : parseFloat(c[r.key] || 0));
+                    if(r.highlightMax) {
+                        const max = Math.max(...values);
+                        if(max > 0) bestIdx = values.indexOf(max);
+                    } else {
