@@ -644,6 +644,7 @@
                     `).join('')}
                 </tr>`;
             }).join('');
+            const cleanVal = val.toLowerCase().replace(/[^a-z0-9]/g, '');
 
             modal.show();
         }
