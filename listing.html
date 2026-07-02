@@ -648,3 +648,32 @@
 
             modal.show();
         }
+            for(let opt of el.options) {
+                const cleanOpt = opt.value.toLowerCase().replace(/[^a-z0-9]/g, '');
+                if(cleanOpt && (cleanOpt.includes(cleanVal) || cleanVal.includes(cleanOpt))) { 
+                    el.value = opt.value; 
+                    return; 
+                }
+            }
+        }
+
+        window.resetFilters = function() {
+            document.querySelectorAll('select').forEach(s => s.value = "");
+            applyFilters();
+        }
+
+        // Mobile Filter Toggle (Custom, no bootstrap offcanvas JS needed for sidebar mode)
+        window.toggleFilter = function() {
+            const sidebar = document.getElementById('filterSidebar');
+            const overlay = document.getElementById('filterOverlay');
+            if(sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            } else {
+                sidebar.classList.add('active');
+                overlay.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>
