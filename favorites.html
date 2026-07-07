@@ -96,3 +96,31 @@
         }
         
         .view-btn:hover { background: #f0f0f0; transform: scale(1.05); }
+
+        /* DELETE BUTTON */
+        .btn-remove {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.2s;
+            z-index: 10;
+        }
+        .btn-remove:hover { background: #ff4757; transform: rotate(90deg); }
+
+        .back-link { 
+            display: inline-block;
+            margin-top: 15px;
+            color: rgba(255,255,255,0.9); 
+            text-decoration: none; 
+            font-weight: 600; 
+            font-size: 1.1rem;
+        }
+        .back-link:hover { color: white; text-decoration: underline; }
+    </style>
