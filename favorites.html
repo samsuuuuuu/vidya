@@ -163,3 +163,29 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
     const favGrid = document.getElementById('favGrid');
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            console.log("Logged in as:", user.uid);
+            loadFavorites(user.uid);
+        } else {
+            console.log("No user logged in, redirecting...");
+            window.location.href = "login.html";
+        }
+    });
+
+    async function loadFavorites(uid) {
+        try {
+            // Fetching from users -> UID -> favorites
+            const querySnapshot = await getDocs(collection(db, "users", uid, "favorites"));
+            
+            if (querySnapshot.empty) {
+                favGrid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 50px;">
+                        <i class="far fa-heart fa-3x" style="color: #e0e0e0; margin-bottom: 20px;"></i>
+                        <h3 style="color: #888;">No favorites yet</h3>
+                        <p style="color: #aaa;">Go explore colleges and click the heart icon!</p>
+                        <a href="index.html" style="display:inline-block; margin-top:10px; color:#6e1bd6; font-weight:bold;">Explore Now</a>
+                    </div>`;
+                return;
+            }
