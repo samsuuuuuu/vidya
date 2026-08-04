@@ -1,0 +1,59 @@
+        /* Force no scroll on body */
+        body, html { height: 100%; margin: 0; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        
+        .register-wrapper { display: flex; height: 100vh; width: 100%; }
+        
+        /* --- LEFT PANEL --- */
+        .left-panel {
+            width: 45%; /* Slightly narrower to give form more room */
+            background: linear-gradient(135deg, rgba(76, 29, 149, 0.9), rgba(110, 27, 214, 0.8)), 
+                        url('assets/bg.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white; display: flex; flex-direction: column;
+            justify-content: center; padding: 3rem;
+            position: relative;
+        }
+        .left-panel h1 { font-weight: 900; font-size: 3.5rem; margin-bottom: 10px; letter-spacing: 1px; }
+        .left-panel p { font-size: 1.2rem; opacity: 0.95; font-weight: 400; line-height: 1.4; }
+        
+        /* --- RIGHT PANEL --- */
+        .right-panel {
+            width: 55%;
+            background-color: white; 
+            display: flex; align-items: center; justify-content: center; 
+            padding: 20px;
+            overflow-y: auto; /* Allow scrolling within panel if height is small */
+        }
+
+        .form-container { width: 100%; max-width: 420px; }
+        .form-title { color: #2e1065; font-weight: 800; margin-bottom: 20px; font-size: 2rem; text-align: center; }
+        
+        /* Form Spacing */
+        .mb-3-custom { margin-bottom: 0.9rem !important; }
+        .form-label { font-weight: 600; color: #444; font-size: 0.85rem; margin-bottom: 4px; }
+        .form-control { padding: 10px 12px; border-radius: 8px; border: 1px solid #ddd; background: #f8f9fa; font-size: 0.95rem; }
+        .form-control:focus { border-color: #6e1bd6; box-shadow: 0 0 0 0.2rem rgba(110, 27, 214, 0.1); background: white; outline: none; }
+        
+        /* Button */
+        .btn-register { 
+            background: #6e1bd6;
+            color: white; width: 100%; padding: 12px; border: none; 
+            font-weight: bold; border-radius: 8px; font-size: 1rem; 
+            margin-top: 10px; transition: 0.3s; cursor: pointer;
+        }
+        .btn-register:hover { background: #4c1d95; transform: translateY(-1px); }
+        .btn-register:disabled { background: #a78bfa; cursor: not-allowed; transform: none; }
+
+        .password-wrapper { position: relative; }
+        .toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #999; }
+
+        /* Handle smaller screens */
+        @media (max-width: 768px) {
+            .register-wrapper { flex-direction: column; height: auto; }
+            .left-panel { width: 100%; height: 200px; padding: 20px; text-align: center; }
+            .left-panel h1 { font-size: 2rem; }
+            .left-panel p { display: none; }
+            .right-panel { width: 100%; height: auto; padding: 30px 20px; }
+            body, html { overflow: auto; }
+        }
