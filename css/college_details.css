@@ -1,0 +1,43 @@
+      /* Layout Styles matching your original design */
+      .vc-header { background: linear-gradient(90deg, #6e1bd6, #ff2c92); color: #fff; padding: 20px; display:flex; justify-content:space-between; align-items:center; }
+      .vc-main { max-width: 1200px; margin: 20px auto; padding: 0 20px; display: flex; gap: 20px; flex-wrap: wrap; }
+      
+      /* Hero Section */
+      .vc-hero-wrapper { width: 100%; margin-bottom: 20px; }
+      .vc-hero { background: #000; color: #fff; border-radius: 15px; overflow: hidden; position: relative; min-height: 450px; display:flex; align-items:flex-end; }
+      .vc-hero video, .vc-hero img.bg-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
+      .vc-hero-content { position: relative; z-index: 2; padding: 40px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); width:100%; display:flex; align-items:center; gap:20px; }
+      .vc-logo { width: 90px; height: 90px; background: #fff; border-radius: 12px; padding: 5px; object-fit: contain; }
+      
+      /* Columns */
+      .vc-left { flex: 2; min-width: 600px; }
+      .vc-right { flex: 1; min-width: 300px; }
+
+      /* Cards */
+      .vc-card { background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+      h2, h3 { color: #6e1bd6; margin-top: 0; }
+
+      /* Gallery */
+      .gallery-grid { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; }
+      .gallery-img { height: 120px; border-radius: 8px; cursor: pointer; transition: transform 0.2s; }
+      .gallery-img:hover { transform: scale(1.05); }
+
+      /* Course Table */
+      .course-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+      .course-table th { text-align: left; background: #f8f9fa; padding: 10px; color: #666; font-size: 0.9rem; }
+      .course-table td { padding: 12px 10px; border-bottom: 1px solid #eee; }
+      
+      /* Reviews */
+      .review-item { border-bottom: 1px solid #eee; padding: 15px 0; }
+      .review-head { display: flex; justify-content: space-between; margin-bottom: 5px; }
+      .rev-stars { color: #ffc107; }
+
+      /* Facilities List */
+      .fac-list { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+      .fac-item { background: #f0f2f5; padding: 5px 10px; border-radius: 4px; font-size: 0.9rem; }
+
+      .btn-fav { background: rgba(255,255,255,0.2); color: white; padding: 8px 15px; text-decoration: none; border-radius: 5px; border: 1px solid rgba(255,255,255,0.5); cursor: pointer; }
+      .btn-fav:hover { background: white; color: #6e1bd6; }
+
+      /* Responsive */
+      @media (max-width: 900px) { .vc-main { flex-direction: column; } .vc-left, .vc-right { min-width: 100%; } }
