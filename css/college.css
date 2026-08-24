@@ -1,0 +1,57 @@
+ body { background: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+        .vc-header { background: linear-gradient(90deg, #6e1bd6, #ff2c92); padding: 15px 0; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .vc-brand { font-weight: 800; font-size: 1.5rem; text-decoration: none; color: white; }
+        .vc-btn-back { color: white; text-decoration: none; font-weight: 600; border: 1px solid rgba(255,255,255,0.3); padding: 5px 15px; border-radius: 20px; transition: 0.2s; }
+        .vc-btn-back:hover { background: rgba(255,255,255,0.1); color: white; }
+        .vc-container { max-width: 1200px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
+        .vc-card { background: white; border-radius: 12px; padding: 25px; margin-bottom: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        .vc-card h3 { color: #6e1bd6; margin-bottom: 20px; font-weight: 700; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; }
+        
+        /* Favorite Button Styling */
+        .btn-fav-custom {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .btn-fav-custom:hover { background: rgba(255, 255, 255, 0.3); transform: translateY(-1px); color: white; }
+        .btn-fav-custom.is-active { background: #ff4757; border-color: #ff4757; color: white; box-shadow: 0 4px 10px rgba(255, 71, 87, 0.3); }
+        .btn-fav-custom.is-active i { animation: heartBeat 0.3s ease-in-out; }
+        @keyframes heartBeat { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+
+        /* Star Rating Widget Styling */
+        .star-widget i {
+            font-size: 1.8rem;
+            color: #d1d5db; /* Default grey */
+            cursor: pointer;
+            transition: color 0.2s;
+            margin-right: 5px;
+        }
+        .star-widget i:hover { color: #ffdb4d; }
+        .star-widget i.active { color: #ffc107; /* Bootstrap warning yellow */ }
+
+        /* Other Styles */
+        .course-table { width: 100%; border-collapse: collapse; }
+        .course-table th { text-align: left; padding: 12px; background: #f8f9fa; color: #555; font-size: 0.9rem; }
+        .course-table td { padding: 12px; border-bottom: 1px solid #eee; color: #333; }
+        .acc-item { border: 1px solid #eee; border-radius: 8px; margin-bottom: 10px; overflow: hidden; }
+        .acc-btn { width: 100%; text-align: left; padding: 15px; background: #fcfcfc; border: none; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; }
+        .acc-content { display: none; padding: 15px; background: white; border-top: 1px solid #eee; color: #555; font-size: 0.95rem; }
+        .sidebar-info p { margin-bottom: 10px; color: #555; }
+        .sidebar-info i { width: 25px; color: #6e1bd6; }
+        .facility-tag { display: inline-block; background: #f3f0ff; color: #6e1bd6; padding: 5px 10px; border-radius: 20px; font-size: 0.85rem; margin: 3px; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .gallery-img { width: 100%; height: 100px; object-fit: cover; border-radius: 8px; cursor: pointer; }
+        #lightboxOverlay { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.92); justify-content: center; align-items: center; }
+        #lightboxImage { max-width: 90%; max-height: 90vh; border-radius: 8px; }
+        .lightbox-close { position: absolute; top: 20px; right: 35px; color: #fff; font-size: 40px; cursor: pointer; }
+        @media (max-width: 768px) { .vc-container { grid-template-columns: 1fr; } }
+   
