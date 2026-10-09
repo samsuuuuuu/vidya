@@ -330,348 +330,372 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBt5DvViwm5ls_B4CWKYIYhMutJJ9opw_Y",
-            authDomain: "vidyaproject-c4a1d.firebaseapp.com",
-            projectId: "vidyaproject-c4a1d",
-            storageBucket: "vidyaproject-c4a1d.firebasestorage.app",
-            messagingSenderId: "637214484165",
-            appId: "1:637214484165:web:f23e84c08cd6069f6fb2ac",
-            measurementId: "G-647MPHBDGW"
-        };
+    const firebaseConfig = {
+        apiKey: "AIzaSyBt5DvViwm5ls_B4CWKYIYhMutJJ9opw_Y",
+        authDomain: "vidyaproject-c4a1d.firebaseapp.com",
+        projectId: "vidyaproject-c4a1d",
+        storageBucket: "vidyaproject-c4a1d.firebasestorage.app",
+        messagingSenderId: "637214484165",
+        appId: "1:637214484165:web:f23e84c08cd6069f6fb2ac",
+        measurementId: "G-647MPHBDGW"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
 
-        let allColleges = [];
-        let allCourses = []; 
-        window.compareList = []; 
+    let allColleges = [];
+    let allCourses = []; 
+    window.compareList = []; 
 
-        onAuthStateChanged(auth, async (user) => {
-            await fetchAllData(); 
-            if (user) setTimeout(() => autoCheckFilters(user.uid), 500);
-            else { checkUrlParams(); applyFilters(); }
+    // Helper functions
+    function getVal(id) {
+        const el = document.getElementById(id);
+        return el ? el.value.trim() : "";
+    }
+
+    function flexibleMatch(fieldVal, searchVal) {
+        if (!fieldVal || !searchVal) return false;
+        return fieldVal.toString().toLowerCase().includes(searchVal.toString().toLowerCase());
+    }
+
+    function setSmart(id, val) {
+        const el = document.getElementById(id);
+        if (!el || !val) return;
+        const cleanVal = val.toLowerCase().replace(/[^a-z0-9]/g, '');
+        for (let opt of el.options) {
+            const cleanOpt = opt.value.toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (cleanOpt && (cleanOpt.includes(cleanVal) || cleanVal.includes(cleanOpt))) { 
+                el.value = opt.value; 
+                return; 
+            }
+        }
+    }
+
+    async function autoCheckFilters(uid) {
+        try {
+            const userDoc = await getDoc(doc(db, "users", uid));
+            if (userDoc.exists()) {
+                const data = userDoc.data();
+                if (data.preferredLocation) setSmart('filterLocation', data.preferredLocation);
+                if (data.preferredStream) setSmart('filterStream', data.preferredStream);
+            }
+        } catch (e) {
+            console.error("Error reading user preferences:", e);
+        }
+        checkUrlParams();
+        applyFilters();
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+        await fetchAllData(); 
+        if (user) setTimeout(() => autoCheckFilters(user.uid), 500);
+        else { checkUrlParams(); applyFilters(); }
+    });
+
+    function checkUrlParams() {
+        const params = new URLSearchParams(window.location.search);
+        const q = params.get('q');
+        if (q) {
+            setSmart('filterLocation', q);
+            setSmart('filterUniv', q);
+            setSmart('filterStream', q);
+        }
+    }
+
+    async function fetchAllData() {
+        try {
+            const colSnap = await getDocs(collection(db, "colleges"));
+            allColleges = [];
+            colSnap.forEach(doc => allColleges.push({ id: doc.id, ...doc.data() }));
+
+            const courseSnap = await getDocs(collection(db, "courses"));
+            allCourses = [];
+            courseSnap.forEach(doc => allCourses.push({ id: doc.id, ...doc.data() }));
+
+            allColleges.forEach(college => {
+                college.courseList = allCourses.filter(c => c.college_id === college.id);
+            });
+            populateUniversities();
+        } catch (e) { console.error("Fetch error:", e); }
+    }
+
+    function populateUniversities() {
+        const univSelect = document.getElementById('filterUniv');
+        univSelect.innerHTML = '<option value="">All Universities</option>';
+        const profileUniversities = [
+            "University of Calicut", "APJ Abdul Kalam Technological University", "University of Kerala",
+            "Mahatma Gandhi University", "Cochin University of Science & Technology", "Kannur University"
+        ];
+        profileUniversities.forEach(univ => {
+            const opt = document.createElement('option');
+            opt.value = univ; opt.innerText = univ; univSelect.appendChild(opt);
         });
+    }
 
-        function checkUrlParams() {
-            const params = new URLSearchParams(window.location.search);
-            const q = params.get('q');
-            if (q) {
-                setSmart('filterLocation', q);
-                setSmart('filterUniv', q);
-                setSmart('filterStream', q);
+    window.applyFilters = function() {
+        const loc = getVal('filterLocation');
+        const univ = getVal('filterUniv');
+        const stream = getVal('filterStream');
+        const courseName = getVal('filterCourse');
+        const maxFee = getVal('filterFees');
+        const type = getVal('filterType');
+
+        const filtered = allColleges.filter(col => {
+            if (loc && !flexibleMatch(col.district, loc) && !flexibleMatch(col.location, loc)) return false;
+            if (univ && !flexibleMatch(col.university, univ)) return false;
+            
+            let streamPass = false;
+            if (!stream) streamPass = true;
+            else {
+                if (flexibleMatch(col.stream, stream)) streamPass = true;
+                else if (stream === "Computer Science" && flexibleMatch(col.stream, "Engineering")) streamPass = true;
             }
-        }
+            if (!streamPass) return false;
 
-        async function fetchAllData() {
-            try {
-                const colSnap = await getDocs(collection(db, "colleges"));
-                allColleges = [];
-                colSnap.forEach(doc => allColleges.push({ id: doc.id, ...doc.data() }));
+            if (type && !flexibleMatch(col.institution_type, type) && !flexibleMatch(col.institutionType, type)) return false;
 
-                const courseSnap = await getDocs(collection(db, "courses"));
-                allCourses = [];
-                courseSnap.forEach(doc => allCourses.push({ id: doc.id, ...doc.data() }));
-
-                allColleges.forEach(college => {
-                    college.courseList = allCourses.filter(c => c.college_id === college.id);
+            if (courseName || maxFee) {
+                const validCourses = col.courseList.filter(c => {
+                    let nameMatch = true;
+                    let feeMatch = true;
+                    if (courseName && !c.name.toLowerCase().includes(courseName.toLowerCase())) nameMatch = false;
+                    if (maxFee) {
+                        const fees = parseInt(c.fees || 0);
+                        if (fees === 0 || fees > parseInt(maxFee)) feeMatch = false;
+                    }
+                    return nameMatch && feeMatch;
                 });
-                populateUniversities();
-            } catch (e) { console.error("Fetch error:", e); }
+                if (validCourses.length === 0) return false;
+            }
+            return true;
+        });
+        renderGroupedColleges(filtered);
+    };
+
+    function renderGroupedColleges(colleges) {
+        const container = document.getElementById('collegesListContainer');
+        const countLabel = document.getElementById('resultCount');
+        
+        container.innerHTML = "";
+        countLabel.innerText = `Showing ${colleges.length} results`;
+
+        if(colleges.length === 0) {
+            container.innerHTML = `<div class="text-center py-5"><h5>No colleges found</h5><button class="btn btn-outline-primary mt-2" onclick="resetFilters()">Reset All Filters</button></div>`;
+            return;
         }
 
-        function populateUniversities() {
-            const univSelect = document.getElementById('filterUniv');
-            univSelect.innerHTML = '<option value="">All Universities</option>';
-            const profileUniversities = [
-                "University of Calicut", "APJ Abdul Kalam Technological University", "University of Kerala",
-                "Mahatma Gandhi University", "Cochin University of Science & Technology", "Kannur University"
-            ];
-            profileUniversities.forEach(univ => {
-                const opt = document.createElement('option');
-                opt.value = univ; opt.innerText = univ; univSelect.appendChild(opt);
-            });
-        }
+        colleges.sort((a, b) => (a.district || "z").localeCompare(b.district || "z"));
 
-        window.applyFilters = function() {
-            const loc = getVal('filterLocation');
-            const univ = getVal('filterUniv');
-            const stream = getVal('filterStream');
-            const courseName = getVal('filterCourse');
-            const maxFee = getVal('filterFees');
-            const type = getVal('filterType');
+        let lastDistrict = null;
+        let currentGrid = null;
 
-            const filtered = allColleges.filter(col => {
-                if (loc && !flexibleMatch(col.district, loc) && !flexibleMatch(col.location, loc)) return false;
-                if (univ && !flexibleMatch(col.university, univ)) return false;
-                
-                let streamPass = false;
-                if (!stream) streamPass = true;
-                else {
-                    if (flexibleMatch(col.stream, stream)) streamPass = true;
-                    else if (stream === "Computer Science" && flexibleMatch(col.stream, "Engineering")) streamPass = true;
-                }
-                if (!streamPass) return false;
+        colleges.forEach(col => {
+            const district = col.district || "Other Locations";
 
-                if (type && !flexibleMatch(col.institution_type, type) && !flexibleMatch(col.institutionType, type)) return false;
+            if (district !== lastDistrict) {
+                container.insertAdjacentHTML('beforeend', `<h4 class="location-heading">${district}</h4>`);
+                currentGrid = document.createElement('div');
+                currentGrid.className = "row g-4 mb-4";
+                container.appendChild(currentGrid);
+                lastDistrict = district;
+            }
 
-                if (courseName || maxFee) {
-                    const validCourses = col.courseList.filter(c => {
-                        let nameMatch = true;
-                        let feeMatch = true;
-                        if (courseName && !c.name.toLowerCase().includes(courseName.toLowerCase())) nameMatch = false;
-                        if (maxFee) {
-                            const fees = parseInt(c.fees || 0);
-                            if (fees === 0 || fees > parseInt(maxFee)) feeMatch = false;
-                        }
-                        return nameMatch && feeMatch;
-                    });
-                    if (validCourses.length === 0) return false;
-                }
-                return true;
-            });
-            renderGroupedColleges(filtered);
-        };
-
-        function renderGroupedColleges(colleges) {
-            const container = document.getElementById('collegesListContainer');
-            const countLabel = document.getElementById('resultCount');
+            const logo = col.logo_path || 'assets/default-college.png';
+            const typeBadge = col.institution_type ? `<span class="badge-item badge-highlight">${col.institution_type}</span>` : '';
+            const streamBadge = col.stream ? `<span class="badge-item">${col.stream}</span>` : '';
+            const courseCountBadge = `<span class="badge-item bg-light text-dark">${col.courseList.length} Courses</span>`;
             
-            container.innerHTML = "";
-            countLabel.innerText = `Showing ${colleges.length} results`;
+            const isSelected = window.compareList.includes(col.id);
+            const btnClass = isSelected ? 'btn-compare-card active' : 'btn-compare-card';
+            const btnIcon = isSelected ? 'fa-check' : 'fa-plus';
+            const btnText = isSelected ? 'Added' : 'Compare';
 
-            if(colleges.length === 0) {
-                container.innerHTML = `<div class="text-center py-5"><h5>No colleges found</h5><button class="btn btn-outline-primary mt-2" onclick="resetFilters()">Reset All Filters</button></div>`;
-                return;
-            }
+            const cardHTML = `
+            <div class="col-md-6 col-lg-4">
+                <div class="college-card">
+                    <button class="${btnClass}" onclick="toggleCompare('${col.id}', this)">
+                        <i class="fas ${btnIcon}"></i> ${btnText}
+                    </button>
+                    <a href="college.html?id=${col.id}" class="text-decoration-none">
+                        <div class="card-cover"></div>
+                        <div class="card-logo-wrapper"><img src="${logo}" class="card-logo" alt="Logo"></div>
+                        <div class="card-body">
+                            <div class="card-badges">${streamBadge} ${typeBadge} ${courseCountBadge}</div>
+                            <h5 class="college-name">${col.name}</h5>
+                            <div class="college-meta"><i class="fas fa-university fa-sm"></i> ${col.university || 'Affiliated'}</div>
+                        </div>
 
-            colleges.sort((a, b) => (a.district || "z").localeCompare(b.district || "z"));
+                        <div class="card-footer-custom">
+                            <div class="rating-badge"><i class="fas fa-star star-icon"></i> ${col.rating || '0.0'}</div>
+                            <span class="btn-view">View Details <i class="fas fa-arrow-right ms-1"></i></span>
+                        </div>
+                    </a>
+                </div>
+            </div>`;
+            currentGrid.insertAdjacentHTML('beforeend', cardHTML);
+        });
+    }
 
-            let lastDistrict = null;
-            let currentGrid = null;
-
-            colleges.forEach(col => {
-                const district = col.district || "Other Locations";
-
-                if (district !== lastDistrict) {
-                    container.insertAdjacentHTML('beforeend', `<h4 class="location-heading">${district}</h4>`);
-                    currentGrid = document.createElement('div');
-                    currentGrid.className = "row g-4 mb-4";
-                    container.appendChild(currentGrid);
-                    lastDistrict = district;
-                }
-
-                const logo = col.logo_path || 'assets/default-college.png';
-                const typeBadge = col.institution_type ? `<span class="badge-item badge-highlight">${col.institution_type}</span>` : '';
-                const streamBadge = col.stream ? `<span class="badge-item">${col.stream}</span>` : '';
-                const courseCountBadge = `<span class="badge-item bg-light text-dark">${col.courseList.length} Courses</span>`;
-                
-                const isSelected = window.compareList.includes(col.id);
-                const btnClass = isSelected ? 'btn-compare-card active' : 'btn-compare-card';
-                const btnIcon = isSelected ? 'fa-check' : 'fa-plus';
-                const btnText = isSelected ? 'Added' : 'Compare';
-
-                const cardHTML = `
-                <div class="col-md-6 col-lg-4">
-                    <div class="college-card">
-                        <button class="${btnClass}" onclick="toggleCompare('${col.id}', this)">
-                            <i class="fas ${btnIcon}"></i> ${btnText}
-                        </button>
-                        <a href="college.html?id=${col.id}" class="text-decoration-none">
-                            <div class="card-cover"></div>
-                            <div class="card-logo-wrapper"><img src="${logo}" class="card-logo" alt="Logo"></div>
-                            <div class="card-body">
-                                <div class="card-badges">${streamBadge} ${typeBadge} ${courseCountBadge}</div>
-                                <h5 class="college-name">${col.name}</h5>
-                                <div class="college-meta"><i class="fas fa-university fa-sm"></i> ${col.university || 'Affiliated'}</div>
-                            </div>
-
-                            <div class="card-footer-custom">
-                                <div class="rating-badge"><i class="fas fa-star star-icon"></i> ${col.rating || '0.0'}</div>
-                                <span class="btn-view">View Details <i class="fas fa-arrow-right ms-1"></i></span>
-                            </div>
-                        </a>
-                    </div>
-                </div>`;
-                currentGrid.insertAdjacentHTML('beforeend', cardHTML);
-            });
+    window.toggleCompare = function(id, btn) {
+        const idx = window.compareList.indexOf(id);
+        if(idx > -1) {
+            window.compareList.splice(idx, 1);
+            btn.classList.remove('active');
+            btn.innerHTML = `<i class="fas fa-plus"></i> Compare`;
+        } else {
+            if(window.compareList.length >= 3) { alert("You can compare maximum 3 colleges."); return; }
+            window.compareList.push(id);
+            btn.classList.add('active');
+            btn.innerHTML = `<i class="fas fa-check"></i> Added`;
         }
+        updateCompareBar();
+    };
 
-        window.toggleCompare = function(id, btn) {
-            const idx = window.compareList.indexOf(id);
-            if(idx > -1) {
-                window.compareList.splice(idx, 1);
-                btn.classList.remove('active');
-                btn.innerHTML = `<i class="fas fa-plus"></i> Compare`;
-            } else {
-                if(window.compareList.length >= 3) { alert("You can compare maximum 3 colleges."); return; }
-                window.compareList.push(id);
-                btn.classList.add('active');
-                btn.innerHTML = `<i class="fas fa-check"></i> Added`;
-            }
-            updateCompareBar();
-        }
-
-        function updateCompareBar() {
-            const bar = document.getElementById('compareBar');
-            const count = document.getElementById('compareCount');
-            if(window.compareList.length > 0) {
-                bar.style.display = 'flex'; // FORCE DISPLAY
-                bar.classList.add('active');
-                count.innerText = window.compareList.length;
-            } else {
-                bar.classList.remove('active');
-                bar.style.display = 'none'; // FORCE HIDE
-            }
-        }
-
-        window.clearComparison = function() {
-            window.compareList = [];
-            
-            // 1. Force hide the bar immediately
-            const bar = document.getElementById('compareBar');
+    function updateCompareBar() {
+        const bar = document.getElementById('compareBar');
+        const count = document.getElementById('compareCount');
+        if(window.compareList.length > 0) {
+            bar.style.display = 'flex';
+            bar.classList.add('active');
+            count.innerText = window.compareList.length;
+        } else {
             bar.classList.remove('active');
             bar.style.display = 'none';
+        }
+    }
 
-            // 2. Refresh all buttons to "Compare" state
-            applyFilters(); 
+    window.clearComparison = function() {
+        window.compareList = [];
+        const bar = document.getElementById('compareBar');
+        bar.classList.remove('active');
+        bar.style.display = 'none';
+        applyFilters(); 
+    };
+
+    const compareBarEl = document.getElementById('compareBar');
+    const compareModalEl = document.getElementById('compareModal');
+
+    compareModalEl.addEventListener('show.bs.modal', () => { compareBarEl.style.display = 'none'; });
+    compareModalEl.addEventListener('hidden.bs.modal', () => { 
+        if(window.compareList.length > 0) compareBarEl.style.display = 'flex'; 
+    });
+
+    window.openCompareModal = function() {
+        const modal = new bootstrap.Modal(compareModalEl);
+        const tbody = document.getElementById('compBody');
+        const headerRow = document.getElementById('compHeaderRow');
+        const ctxMsg = document.getElementById('compareContextMsg');
+        
+        const selectedCols = allColleges.filter(c => window.compareList.includes(c.id));
+        if(selectedCols.length < 2) { alert("Select at least 2 colleges."); return; }
+        const activeCourse = getVal('filterCourse');
+        
+        if(activeCourse) {
+            ctxMsg.style.display = 'block';
+            ctxMsg.innerHTML = `<i class="fas fa-info-circle me-2"></i>Comparison optimized for <strong>${activeCourse}</strong> course. Highlights indicate best value.`;
+        } else {
+            ctxMsg.style.display = 'block';
+            ctxMsg.innerHTML = `<i class="fas fa-lightbulb me-2"></i>Tip: Select a <strong>Course Name</strong> in the filter to compare exact Fees & Duration.`;
         }
 
-        // --- HIDE BAR ON MODAL OPEN ---
-        const compareBarEl = document.getElementById('compareBar');
-        const compareModalEl = document.getElementById('compareModal');
+        headerRow.innerHTML = `<th>Feature</th>` + selectedCols.map(c => 
+            `<th><img src="${c.logo_path || 'assets/default-college.png'}" style="width:40px; height:40px; object-fit:contain; margin-bottom:5px;"><br>${c.name}</th>`
+        ).join('');
 
-        compareModalEl.addEventListener('show.bs.modal', () => { compareBarEl.style.display = 'none'; });
-        compareModalEl.addEventListener('hidden.bs.modal', () => { 
-            if(window.compareList.length > 0) compareBarEl.style.display = 'flex'; 
-        });
+        let rows = [
+            { label: "Rating", key: "rating", highlightMax: true },
+            { label: "University", key: "university" },
+            { label: "Type", key: "institution_type" },
+            { label: "Location", key: "district" },
+        ];
 
-        window.openCompareModal = function() {
-            const modal = new bootstrap.Modal(compareModalEl);
-            const tbody = document.getElementById('compBody');
-            const headerRow = document.getElementById('compHeaderRow');
-            const ctxMsg = document.getElementById('compareContextMsg');
-            
-            const selectedCols = allColleges.filter(c => window.compareList.includes(c.id));
-            if(selectedCols.length < 2) { alert("Select at least 2 colleges."); return; }
-            const activeCourse = getVal('filterCourse');
-            
-            if(activeCourse) {
-                ctxMsg.style.display = 'block';
-                ctxMsg.innerHTML = `<i class="fas fa-info-circle me-2"></i>Comparison optimized for <strong>${activeCourse}</strong> course. Highlights indicate best value.`;
-            } else {
-                ctxMsg.style.display = 'block';
-                ctxMsg.innerHTML = `<i class="fas fa-lightbulb me-2"></i>Tip: Select a <strong>Course Name</strong> in the filter to compare exact Fees & Duration.`;
-            }
+        if(activeCourse) {
+            rows.push({ label: "Course", val: () => activeCourse });
+            rows.push({ 
+                label: "Tuition Fee (Approx)", 
+                highlightMin: true, 
+                val: (c) => {
+                    const course = c.courseList.find(x => x.name.toLowerCase().includes(activeCourse.toLowerCase()));
+                    return course ? `₹${course.fees}` : 'N/A';
+                },
+                rawVal: (c) => { 
+                    const course = c.courseList.find(x => x.name.toLowerCase().includes(activeCourse.toLowerCase()));
+                    return course && parseInt(course.fees) > 0 ? parseInt(course.fees) : Infinity;
+                }
+            });
+            rows.push({ 
+                label: "Seats",
+                highlightMax: true,
+                val: (c) => {
+                    const course = c.courseList.find(x => x.name.toLowerCase().includes(activeCourse.toLowerCase()));
+                    return course ? course.seats : '-';
+                },
+                rawVal: (c) => { 
+                    const course = c.courseList.find(x => x.name.toLowerCase().includes(activeCourse.toLowerCase()));
+                    return course ? parseInt(course.seats) : 0;
+                }
+            });
+            rows.push({ 
+                label: "Duration", 
+                val: (c) => {
+                    const course = c.courseList.find(x => x.name.toLowerCase().includes(activeCourse.toLowerCase()));
+                    return course ? course.duration : '-';
+                }
+            });
+        } else {
+            rows.push({ label: "Total Courses", val: (c) => c.courseList.length });
+        }
 
-            headerRow.innerHTML = `<th>Feature</th>` + selectedCols.map(c => 
-                `<th><img src="${c.logo_path || 'assets/default-college.png'}" style="width:40px; height:40px; object-fit:contain; margin-bottom:5px;"><br>${c.name}</th>`
-            ).join('');
-
-            let rows = [
-                { label: "Rating", key: "rating", highlightMax: true },
-                { label: "University", key: "university" },
-                { label: "Type", key: "institution_type" },
-                { label: "Location", key: "district" },
-            ];
-
-            if(activeCourse) {
-                rows.push({ label: "Course", val: () => activeCourse });
-                rows.push({ 
-                    label: "Tuition Fee (Approx)", 
-                    highlightMin: true, 
-                    val: (c) => {
-                        const course = c.courseList.find(x => x.name.toLowerCase().includes(activeCourse.toLowerCase()));
-                        return course ? `₹${course.fees}` : 'N/A';
-                    },
-                    rawVal: (c) => { 
-                        const course = c.courseList.find(x => x.name.toLowerCase().includes(activeCourse.toLowerCase()));
-                        return course ? parseInt(course.fees) : 9999999;
-                    }
-                });
-                rows.push({ 
-                    label: "Seats",
-                    highlightMax: true,
-                    val: (c) => {
-                        const course = c.courseList.find(x => x.name.toLowerCase().includes(activeCourse.toLowerCase()));
-                        return course ? course.seats : '-';
-                    },
-
-                    rawVal: (c) => { 
-                        const course = c.courseList.find(x => x.name.toLowerCase().includes(activeCourse.toLowerCase()));
-                        return course ? parseInt(course.seats) : 0;
-                    }
-                });
-                rows.push({ 
-                    label: "Duration", 
-                    val: (c) => {
-                        const course = c.courseList.find(x => x.name.toLowerCase().includes(activeCourse.toLowerCase()));
-                        return course ? course.duration : '-';
-                    }
-                });
-            } else {
-                rows.push({ label: "Total Courses", val: (c) => c.courseList.length });
-            }
-
-            tbody.innerHTML = rows.map(r => {
-                let bestIdx = -1;
-                if(r.highlightMax || r.highlightMin) {
-                    const values = selectedCols.map(c => r.rawVal ? r.rawVal(c) : parseFloat(c[r.key] || 0));
-                    if(r.highlightMax) {
-                        const max = Math.max(...values);
-                        if(max > 0) bestIdx = values.indexOf(max);
-                    } else {
-
-                        const validValues = values.filter(v => v > 0 && v < 999999);
+        tbody.innerHTML = rows.map(r => {
+            let bestIdx = -1;
+            if(r.highlightMax || r.highlightMin) {
+                const values = selectedCols.map(c => r.rawVal ? r.rawVal(c) : parseFloat(c[r.key] || 0));
+                if(r.highlightMax) {
+                    const max = Math.max(...values);
+                    if(max > 0) bestIdx = values.indexOf(max);
+                } else {
+                    const validValues = values.filter(v => v > 0 && v !== Infinity);
+                    if(validValues.length > 0) {
                         const min = Math.min(...validValues);
-                        if(validValues.length > 0) bestIdx = values.indexOf(min);
+                        bestIdx = values.indexOf(min);
                     }
                 }
-
-                return `<tr>
-                    <td class="fw-bold bg-light">${r.label}</td>
-                    ${selectedCols.map((c, i) => `
-                        <td class="${i === bestIdx ? 'best-value' : ''}">
-                            ${r.val ? r.val(c) : (c[r.key] || '-')}
-                        </td>
-                    `).join('')}
-                </tr>`;
-            }).join('');
-            const cleanVal = val.toLowerCase().replace(/[^a-z0-9]/g, '');
-
-            modal.show();
-        }
-            for(let opt of el.options) {
-                const cleanOpt = opt.value.toLowerCase().replace(/[^a-z0-9]/g, '');
-                if(cleanOpt && (cleanOpt.includes(cleanVal) || cleanVal.includes(cleanOpt))) { 
-                    el.value = opt.value; 
-                    return; 
-                }
             }
-        }
 
-        window.resetFilters = function() {
-            document.querySelectorAll('select').forEach(s => s.value = "");
-            applyFilters();
-        }
+            return `<tr>
+                <td class="fw-bold bg-light">${r.label}</td>
+                ${selectedCols.map((c, i) => `
+                    <td class="${i === bestIdx ? 'best-value' : ''}">
+                        ${r.val ? r.val(c) : (c[r.key] || '-')}
+                    </td>
+                `).join('')}
+            </tr>`;
+        }).join('');
 
-        // Mobile Filter Toggle (Custom, no bootstrap offcanvas JS needed for sidebar mode)
-        window.toggleFilter = function() {
-            const sidebar = document.getElementById('filterSidebar');
-            const overlay = document.getElementById('filterOverlay');
-            if(sidebar.classList.contains('active')) {
-                sidebar.classList.remove('active');
-                overlay.classList.remove('active');
-            } else {
-                sidebar.classList.add('active');
-                overlay.classList.add('active');
-            }
+        modal.show();
+    };
+
+    window.resetFilters = function() {
+        document.querySelectorAll('select').forEach(s => s.value = "");
+        applyFilters();
+    };
+
+    window.toggleFilter = function() {
+        const sidebar = document.getElementById('filterSidebar');
+        const overlay = document.getElementById('filterOverlay');
+        if(sidebar.classList.contains('active')) {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        } else {
+            sidebar.classList.add('active');
+            overlay.classList.add('active');
         }
-    </script>
+    };
+</script>
 </body>
 </html>
